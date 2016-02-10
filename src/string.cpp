@@ -1,60 +1,31 @@
 #include "MyString.h"
+#include <cstring>
 #include <stdexcept>
 
 char String::npos = '\0';
 
-String::String() {
-    str_ = new char[1];
-    *str_ = '\0';
-    size_ = 0;
+String::String() : str_(&npos), size_(0) {}
+
+String::String(const char *str) : size_(std::strlen(str)), str_(new char[size_+1]) {
+    std::strcpy(str_, str);
 }
 
-String::String(const char *str) {
-    unsigned i = 0;
-    const char *p = str;
-    while (*(p++) != '\0') {
-        ++i;
-    }
-    char *p_ = str_ = new char[i+1];
-    size_ = i;
-    for (unsigned j = 0; j <= i; ++j) {
-        *(p_++) = *(str++);
-    }
+String::String(const char *str, unsigned count) : size_(count), str_(new char[size_+1]) {
+    std::strcpy(str_, str);
 }
 
-String::String(const char *str, unsigned count) {
-    str_ = new char[count+1];
+String::String(char ch, unsigned count) : size_(count), str_(new char[size_+1]) {
     char *p = str_;
-    size_ = count;
-    for (unsigned i = 0; i <= count; ++i) {
-        *(p++) = *(str++);
-    }
+    std::memset(str_, ch, count);
+    *(p+size_) = '\0';
 }
 
-String::String(char ch, unsigned count) {
-    str_ = new char[count+1];
-    char *p = str_;
-    size_ = count;
-    for (unsigned i = 0; i < count; ++i) {
-        *(p++) = ch;
-    }
-    *(p++) = '\0';
+String::String(const String &other) : size_(other.size_), str_(new char[size_+1]) {
+    std::strcpy(str_, other.str_);
 }
 
-String::String(const String &other) {
-    char *po = other.str_;
-    char *pt = str_= new char[other.size_+1];
-    size_ = other.size_;
-    for(unsigned i = 0; i < size_; ++i) {
-        *(pt++) = *(po++);
-    }
-    *pt = *po;
-}
-
-String::String(String &&other) {
-    str_ = other.str_;
-    size_ = other.size_;
-    other.str_ = &String::npos;
+String::String(String &&other) : str_(other.str_), size_(other.size_) {
+    other.str_ = &npos;
     other.size_ = 0;
 }
 
@@ -66,7 +37,9 @@ String::~String() {
 
 String &String::operator=(const String &other){
     if (other.size_ > size_) {
-        delete [] str_;
+        if (str_ != &npos) {
+            delete[] str_;
+        }
         str_ = new char[other.size_+1];
         size_ = other.size_;
     }
@@ -81,104 +54,79 @@ String &String::operator=(const String &other){
 }
 
 String &String::operator=(String &&other){
-    delete [] str_;
+    if (str_ != &npos) {
+        delete[] str_;
+    }
     str_ = other.str_;
     size_ = other.size_;
-    other.str_ = &String::npos;
+    other.str_ = &npos;
     other.size_ = 0;
     return *this;
 }
 
 String &String::operator+=(const String &suffix) {
-    char *str;
-    char *tmp = str_;
-    char *pt = str = new char[size_+suffix.size_+1];
-    char *ps = suffix.str_;
-    for(unsigned i = 0; i < size_; ++i) {
-        *(pt++) = *(tmp++);
+    char *str = new char[size_+suffix.size_+1];
+    std::strcpy(str, str_);
+    std::strcpy((str+size_), suffix.str_);
+    if (str_ != '\0') {
+        delete[] str_;
     }
-    for(unsigned i = 0; i < suffix.size_; ++i) {
-        *(pt++) = *(ps++);
-    }
-    *pt= '\0';
-    delete [] str_;
-    size_+= suffix.size_;
     str_ = str;
+    size_+= suffix.size_;
     return *this;
 }
 
 String &String::operator+=(const char *suffix) {
-    unsigned size = 0;
-    const char *ps = suffix;
-    while(*(ps++) != '\0') {
-        ++size;
+    unsigned size = std::strlen(suffix);
+    char *str = new char[size_+size+1];
+    std::strcpy(str, str_);
+    std::strcpy((str+size_), suffix);
+    if (str_ != '\0') {
+        delete[] str_;
     }
-    char *str;
-    char *tmp = str_;
-    char *pt = str = new char[size_+size+1];
-    ps = suffix;
-    for(unsigned i = 0; i < size_; ++i) {
-        *(pt++) = *(tmp++);
-    }
-    for(unsigned i = 0; i < size; ++i) {
-        *(pt++) = *(ps++);
-    }
-    *pt = '\0';
-    delete [] str_;
     size_+= size;
     str_ = str;
     return *this;
 }
 
 String &String::operator+=(char suffix) {
-    char *str;
-    char *tmp = str_;
-    char *pt = str = new char[size_+2];
-    char ps = suffix;
-    for(unsigned i = 0; i < size_; ++i) {
-        *(pt++) = *(tmp++);
+    char *str = new char[size_+2];
+    std::strcpy(str, str_);
+    *(str+size_) = suffix;
+    *(str+size_+1) = npos;
+    if (str_ != '\0') {
+        delete[] str_;
     }
-    *(pt++) = ps;
-    *pt = '\0';
-    delete [] str_;
     size_= size_ + 1;
     str_ = str;
     return *this;
 }
 
 void String::swap(String &other) {
-    char *tmp;
-    unsigned size;
-    tmp = str_;
-    size = size_;
-    str_ = other.str_;
-    size_ = other.size_;
-    other.str_ = tmp;
-    other.size_ = size;
+    std::swap(str_, other.str_);
+    std::swap(size_, other.size_);
 }
 
 char &String::operator[](unsigned pos) {
-    return *(str_ + pos);
+    return str_[pos];
 }
 
 const char String::operator[](unsigned pos) const {
-    return *(str_ + pos);
+    return str_[pos];
 }
 
 char &String::at(unsigned pos) {
     if (pos >= size_) {
-        throw std::out_of_range("");
+        throw std::out_of_range("out_of_range");
     }
-    char *pt = str_ + pos;
-    return *(pt);
+    return str_[pos];
 }
 
 const char String::at(unsigned pos) const {
     if (pos >= size_) {
-        throw std::out_of_range("");
+        throw std::out_of_range("out_of_range");
     }
-    char *pt = str_ + pos;
-    return *(pt);
+    return str_[pos];
 }
 
 const char *String::data() const {
@@ -186,24 +134,11 @@ const char *String::data() const {
 }
 
 unsigned String::size() const {
-    char *p = this->str_;
-    unsigned i = 0;
-    while(*(p++) != '\0') {
-        ++i;
-    }
-    return i;
+    return size_;
 }
 
 bool operator==(const String &lhs, const String &rhs) {
-    if (lhs.size_ == rhs.size_) {
-        char *pl = lhs.str_;
-        char *pr = rhs.str_;
-        for(unsigned i = 0; i <= lhs.size_; ++i) {
-            if (*(pl++) != *(pr++)) return false;
-        }
-        return true;
-    }
-    return false;
+    return std::strcmp(lhs.data(), rhs.data());
 }
 
 bool operator<(const String &lhs, const String &rhs) {

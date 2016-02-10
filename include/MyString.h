@@ -3,13 +3,13 @@
 #include <iostream>
 
 class String {
-    private:
+private:
     char *str_;
-    
-    unsigned size_;
-    public:
     static char npos;
     
+    unsigned size_;
+
+public:
     String();
     
     String(const char *str);
