@@ -77,7 +77,7 @@ String &String::operator+=(const String &suffix) {
 }
 
 String &String::operator+=(const char *suffix) {
-    unsigned size = std::strlen(suffix);
+    size_t size = std::strlen(suffix);
     char *str = new char[size_+size+1];
     std::strcpy(str, str_);
     std::strcpy((str+size_), suffix);
@@ -138,20 +138,18 @@ unsigned String::size() const {
 }
 
 bool operator==(const String &lhs, const String &rhs) {
-    return std::strcmp(lhs.data(), rhs.data());
+    if (std::strcmp(lhs.data(), rhs.data()) == 0) {
+        return true;
+    }
+    return false;
 }
 
 bool operator<(const String &lhs, const String &rhs) {
-    unsigned size;
-    lhs.size_ <= rhs.size_ ? size = lhs.size_ : size = rhs.size_;
-    for(unsigned i = 0; i < size; ++i) {
-        if (*(lhs.str_ + i) < *(rhs.str_ + i)) {
-            return true;
-        } else if (*(lhs.str_ + i) > *(rhs.str_ + i)) {
-            return false;
-        }
+    if (std::strcmp(lhs.data(), rhs.data()) < 0) {
+        return true;
+    } else if (std::strcmp(lhs.data(), rhs.data()) > 0) {
+        return false;
     }
-    return false;
 }
 
 String operator+(const String &lhs, const String &rhs) {
@@ -163,7 +161,8 @@ String operator+(const String &lhs, const char *rhs) {
 }
 
 String operator+(const char *lhs, const String &rhs) {
-    return String(rhs) += lhs;
+    String tmp(lhs);
+    return tmp += rhs;
 }
 
 bool operator!=(const String &lhs, const String &rhs) {

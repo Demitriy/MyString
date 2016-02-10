@@ -185,7 +185,7 @@ void Test_at() {
     std::cout << "Test_at has been failed" << std::endl;
 }
 
-/*void Test_equality() {
+void Test_equality() {
     String A("Test");
     String B(A);
     assert(A.size() == B.size());
@@ -201,7 +201,7 @@ void Test_less() {
     if (A < B) {
         std::cout << "Test_less has been failed 207" << std::endl;
     }
-    B += "er";
+    A += "er";
     if (A < B) {
         std::cout << "Test_less has been failed 211" << std::endl;
     }
@@ -215,40 +215,61 @@ void Test_plus_1() {
     String res("Test_plus_1");
     C = A + B;
     A = A + B;
-    assert(C == res);
-    assert(A == res);
+    assert(C.size() == res.size());
+    for(unsigned i = 0; i < C.size(); ++i) {
+        assert(C[i] == res[i]);
+    }
+    assert(A.size() == res.size());
+    for(unsigned i = 0; i < A.size(); ++i) {
+        assert(A[i] == res[i]);
+    }
     std::cout << "Test_plus_1 has been completed" << std::endl;
 }
 
 void Test_plus_2() {
     String A("Test_");
-    char *B = "plus_1";
+    char *B = "plus_2";
     String C;
-    String res("Test_plus_1");
+    String res("Test_plus_2");
     C = A + B;
     A = A + B;
-    assert(C == res);
-    assert(A == res);
+    assert(C.size() == res.size());
+    for(unsigned i = 0; i < C.size(); ++i) {
+        assert(C[i] == res[i]);
+    }
+    assert(A.size() == res.size());
+    for(unsigned i = 0; i < A.size(); ++i) {
+        assert(A[i] == res[i]);
+    }
     std::cout << "Test_plus_2 has been completed" << std::endl;
 }
 
 void Test_plus_3() {
-    String A("Test_");
-    char *B = "plus_1";
+    String B("plus_3");
+    char *A = "Test_";
     String C;
-    String res("Test_plus_1");
-    C = B + A;
-    A = B + A;
-    assert(C == res);
-    assert(A == res);
+    String res("Test_plus_3");
+    C = A + B;
+    B = A + B;
+    assert(C.size() == res.size());
+    for(unsigned i = 0; i < C.size(); ++i) {
+        assert(C[i] == res[i]);
+    }
+    assert(B.size() == res.size());
+    for(unsigned i = 0; i < B.size(); ++i) {
+        assert(B[i] == res[i]);
+    }
     std::cout << "Test_plus_3 has been completed" << std::endl;
 }
 
 void Test_not_equality() {
     String A("kjh");
     String B("hgh");
-    assert(!(A == B));
-    std::cout << "Test_not_equlity has been completed" << std::endl;
+    if (A == B) {
+        std::cout << "Test_not_equlity has been failed" << std::endl;
+    } else {
+        std::cout << "Test_not_equlity has been completed" << std::endl;
+    }
 }
 
 void Test_less_equality() {
@@ -281,7 +302,7 @@ void Test_more_equality() {
     } else {
         std::cout << "Test_more_equlity has been failed" << std::endl;
     }
-}*/
+}
 
 int main() {
     Test1();
@@ -298,14 +319,15 @@ int main() {
     Test_swap();
     Test_index();
     Test_at();
-  /*  Test_equality();
+    Test_equality();
     Test_less();
     Test_plus_1();
     Test_plus_2();
     Test_plus_3();
     Test_not_equality();
     Test_less_equality();
-    Test_more();*/
+    Test_more();
+    Test_more_equality();
     return 0;
 }
 
