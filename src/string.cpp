@@ -30,7 +30,7 @@ String::String(String &&other) : str_(other.str_), size_(other.size_) {
 }
 
 String::~String() {
-    if (str_ != &String::npos) {
+    if (str_ != &npos) {
         delete[] str_;
     }
 }
@@ -68,7 +68,7 @@ String &String::operator+=(const String &suffix) {
     char *str = new char[size_+suffix.size_+1];
     std::strcpy(str, str_);
     std::strcpy((str+size_), suffix.str_);
-    if (str_ != '\0') {
+    if (str_ != &npos) {
         delete[] str_;
     }
     str_ = str;
@@ -81,7 +81,7 @@ String &String::operator+=(const char *suffix) {
     char *str = new char[size_+size+1];
     std::strcpy(str, str_);
     std::strcpy((str+size_), suffix);
-    if (str_ != '\0') {
+    if (str_ != &npos) {
         delete[] str_;
     }
     size_+= size;
@@ -94,7 +94,7 @@ String &String::operator+=(char suffix) {
     std::strcpy(str, str_);
     *(str+size_) = suffix;
     *(str+size_+1) = npos;
-    if (str_ != '\0') {
+    if (str_ != &npos) {
         delete[] str_;
     }
     size_= size_ + 1;
