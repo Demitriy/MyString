@@ -9,6 +9,7 @@ else()
     add_definitions(-std=c++11)
 endif()
 
+
 include_directories(Catch/include)
 
 include_directories(include)
